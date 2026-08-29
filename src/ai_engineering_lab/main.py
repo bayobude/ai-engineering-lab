@@ -39,6 +39,25 @@ def health_check():
     return {"status": "healthy"}
 
 
+@app.get("/model-info")
+def model_info():
+    return {
+        "model_name": "Iris Classifier",
+        "model_type": type(model).__name__,
+        "features": [
+            "sepal_length",
+            "sepal_width",
+            "petal_length",
+            "petal_width",
+        ],
+        "classes": [
+            "setosa",
+            "versicolor",
+            "virginica",
+        ],
+    }
+
+
 @app.post("/predict")
 def predict(iris: IrisFeatures):
     features = [[

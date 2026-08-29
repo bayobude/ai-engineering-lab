@@ -52,3 +52,28 @@ def test_health_check():
 
     assert response.status_code == 200
     assert response.json() == {"status": "healthy"}
+
+
+
+def test_model_info():
+    response = client.get("/model-info")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["model_name"] == "Iris Classifier"
+    assert "model_type" in data
+
+    assert data["features"] == [
+        "sepal_length",
+        "sepal_width",
+        "petal_length",
+        "petal_width",
+    ]
+
+    assert data["classes"] == [
+        "setosa",
+        "versicolor",
+        "virginica",
+    ]
