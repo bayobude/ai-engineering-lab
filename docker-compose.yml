@@ -1,6 +1,0 @@
-services:
-  api:
-    build: .
-    container_name: iris-classification-api
-    ports:
-      - "8000:8000"
