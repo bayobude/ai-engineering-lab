@@ -11,8 +11,8 @@ def test_home():
 
     assert response.status_code == 200
     assert response.json() == {
-        "message": "Iris Classification API is running!"
-    }
+         "message": "Iris Classification API is running"
+ }
 
 
 def test_predict_setosa():
@@ -45,3 +45,10 @@ def test_invalid_measurement():
     )
 
     assert response.status_code == 422
+
+
+def test_health_check():
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "healthy"}

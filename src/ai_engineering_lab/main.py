@@ -1,36 +1,55 @@
-from fastapi import FastAPI
+from pathlib import Path
 
-from ai_engineering_lab.model import iris, model
-from ai_engineering_lab.schemas import FlowerMeasurements
+import joblib
+from fastapi import FastAPI
+from pydantic import BaseModel, Field
 
 
 app = FastAPI(
     title="Iris Classification API",
-    description="An API that predicts Iris flower species.",
-    version="1.0.0"
+    description="API for predicting Iris flower species",
+    version="1.0.0",
 )
 
 
+class IrisFeatures(BaseModel):
+    sepal_length: float = Field(gt=0)
+    sepal_width: float = Field(gt=0)
+    petal_length: float = Field(gt=0)
+    petal_width: float = Field(gt=0)
+
+MODEL_PATH = Path("models/iris_model.joblib")
+
+model = joblib.load(MODEL_PATH)
+
+CLASS_NAMES = {
+    0: "setosa",
+    1: "versicolor",
+    2: "virginica",
+}
+
+
 @app.get("/")
-def home():
-    return {
-        "message": "Iris Classification API is running!"
-    }
+def read_root():
+    return {"message": "Iris Classification API is running"}
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
 
 
 @app.post("/predict")
-def predict(flower: FlowerMeasurements):
+def predict(iris: IrisFeatures):
     features = [[
-        flower.sepal_length,
-        flower.sepal_width,
-        flower.petal_length,
-        flower.petal_width
+        iris.sepal_length,
+        iris.sepal_width,
+        iris.petal_length,
+        iris.petal_width,
     ]]
 
-    prediction = model.predict(features)
-
-    predicted_species = iris.target_names[prediction[0]]
+    prediction = model.predict(features)[0]
 
     return {
-        "prediction": predicted_species
+        "prediction": CLASS_NAMES[int(prediction)]
     }
