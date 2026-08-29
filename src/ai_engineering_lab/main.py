@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 app = FastAPI(
     title="Iris Classification API",
-    description="API for predicting Iris flower species",
+    description="A machine learning API for predicting Iris flower species.",
     version="1.0.0",
 )
 
@@ -29,17 +29,40 @@ CLASS_NAMES = {
 }
 
 
+class PredictionResponse(BaseModel):
+    prediction: str
+
+
+class HealthResponse(BaseModel):
+    status: str
+
+
+class ModelInfoResponse(BaseModel):
+    model_name: str
+    model_type: str
+    features: list[str]
+    classes: list[str]
+
+
 @app.get("/")
 def read_root():
     return {"message": "Iris Classification API is running"}
 
 
-@app.get("/health")
+@app.get(
+    "/api/v1/health",
+    response_model=HealthResponse,
+    tags=["Health"],
+)
 def health_check():
     return {"status": "healthy"}
 
 
-@app.get("/model-info")
+@app.get(
+    "/api/v1/model-info",
+    response_model=ModelInfoResponse,
+    tags=["Model"],
+)
 def model_info():
     return {
         "model_name": "Iris Classifier",
@@ -58,7 +81,11 @@ def model_info():
     }
 
 
-@app.post("/predict")
+@app.post(
+    "/api/v1/predict",
+    response_model=PredictionResponse,
+    tags=["Prediction"],
+)
 def predict(iris: IrisFeatures):
     features = [[
         iris.sepal_length,
@@ -69,6 +96,12 @@ def predict(iris: IrisFeatures):
 
     prediction = model.predict(features)[0]
 
+    class_names = {
+        0: "setosa",
+        1: "versicolor",
+        2: "virginica",
+    }
+
     return {
-        "prediction": CLASS_NAMES[int(prediction)]
+        "prediction": class_names[int(prediction)]
     }

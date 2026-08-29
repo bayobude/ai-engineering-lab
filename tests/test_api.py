@@ -17,7 +17,7 @@ def test_home():
 
 def test_predict_setosa():
     response = client.post(
-        "/predict",
+        "/api/v1/predict",
         json={
             "sepal_length": 5.1,
             "sepal_width": 3.5,
@@ -35,7 +35,7 @@ def test_predict_setosa():
 
 def test_invalid_measurement():
     response = client.post(
-        "/predict",
+        "/api/v1/predict",
         json={
             "sepal_length": -5,
             "sepal_width": 3.5,
@@ -48,7 +48,7 @@ def test_invalid_measurement():
 
 
 def test_health_check():
-    response = client.get("/health")
+    response = client.get("/api/v1/health")
 
     assert response.status_code == 200
     assert response.json() == {"status": "healthy"}
@@ -56,7 +56,7 @@ def test_health_check():
 
 
 def test_model_info():
-    response = client.get("/model-info")
+    response = client.get("/api/v1/model-info")
 
     assert response.status_code == 200
 
